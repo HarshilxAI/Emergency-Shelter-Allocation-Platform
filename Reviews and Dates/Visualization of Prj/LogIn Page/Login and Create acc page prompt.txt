@@ -1,0 +1,287 @@
+### AUTHENTICATION PAGES — FINAL UI + FUNCTIONAL SPECIFICATION
+
+Modify the existing ESAP project. Do not rebuild the application.
+
+Use the supplied authentication screenshots and HTML reference as the
+exact visual and interaction reference.
+
+PAGES:
+- Login
+- Create Account
+
+==================================================
+1. BRANDING
+==================================================
+
+Replace the existing "+" brand icon with the supplied ESAP
+hand-house-hand symbol.
+
+Use the same symbol as the Hero page branding.
+
+Ensure the browser favicon also uses the supplied ESAP symbol.
+
+==================================================
+2. NAVBAR
+==================================================
+
+Left:
+[ESAP Symbol] Shelter Allocation
+
+Right:
+- Light/Dark toggle
+- Back to home
+
+Match the reference typography, spacing, borders and sizing.
+
+==================================================
+3. AUTH CARD
+==================================================
+
+Use the exact split layout:
+
+LEFT:
+- Informational panel
+- Kicker
+- Large heading
+- Description
+- ACCESS information at bottom
+
+RIGHT:
+- Authentication form
+- Appropriate eyebrow
+- Heading
+- Description
+- Google button
+- OR divider
+- Email/number tabs
+- Form fields
+- Administrator option
+- Submit button
+- Login/Create Account switch
+
+Do not replace this with a generic login design.
+
+==================================================
+4. LOGIN
+==================================================
+
+Heading:
+"Log in"
+
+Supporting text:
+"Choose how you want to continue."
+
+Provide:
+
+- Continue with Google
+- Continue with email
+- Continue with number
+
+Email:
+Email address + password
+
+Number:
++91 + mobile number + password
+
+Password must have Show/Hide functionality.
+
+Administrator option:
+
+"Log in as administrator"
+
+Selecting it and clicking Log in must open the administrator
+passkey modal.
+
+Do not open the modal merely by checking the checkbox.
+
+==================================================
+5. CREATE ACCOUNT
+==================================================
+
+Heading:
+"Create account"
+
+Supporting text:
+"Set up your access to the shelter allocation platform."
+
+Provide:
+
+- Continue with Google
+- Continue with email
+- Continue with number
+
+Email/number authentication must work.
+
+Password must include live validation:
+
+✓ At least 8 characters
+✓ At least 1 uppercase letter
+✓ At least 1 number
+✓ At least 1 special character
+
+Administrator option:
+
+"Create account as administrator"
+
+When selected, clicking Create account opens the administrator
+passkey verification modal.
+
+==================================================
+6. GOOGLE AUTHENTICATION — IMPORTANT
+==================================================
+
+The current project has the Google button visually but does not
+provide the actual Google authentication flow.
+
+Implement this properly.
+
+The Google button must NOT remain a dummy button.
+
+Inspect the existing authentication architecture and integrate
+Google OAuth/Google Identity authentication with the current user
+authentication system.
+
+Requirements:
+
+- Google sign-in must authenticate an actual Google account.
+- Existing users should be recognized correctly.
+- New Google users should be created/registered appropriately.
+- Authentication state must integrate with the existing application.
+- Successful authentication must redirect to the correct user
+  dashboard.
+- Do not break existing email authentication.
+- Do not break number/mobile authentication.
+- Do not break administrator authentication.
+
+Use environment variables for Google credentials/configuration.
+Never hard-code secrets.
+
+If Google authentication requires backend changes, make only the
+necessary targeted backend changes.
+
+==================================================
+7. EMAIL + NUMBER AUTHENTICATION
+==================================================
+
+Email login/registration must connect to the existing backend.
+
+Number/mobile login/registration must also be functional rather than
+being a visual-only tab.
+
+Preserve the +91 presentation.
+
+Do not remove or bypass existing authentication logic.
+
+==================================================
+8. ADMIN PASSKEY
+==================================================
+
+Preserve the existing administrator verification behavior.
+
+Flow:
+
+Administrator checkbox
+        ↓
+User clicks Login/Create Account
+        ↓
+Blurred passkey modal
+        ↓
+Administrator enters passkey
+        ↓
+Backend verification
+        ↓
+Continue to appropriate admin flow
+
+The modal must match the supplied reference.
+
+==================================================
+9. FOOTER
+==================================================
+
+Use the same finalized footer as the Hero page.
+
+Keep one horizontal row, left-aligned/on one side.
+
+Content:
+
+Emergency Shelter Allocation Platform
+
+Rights reserved with Team Deccan Chargers
+
+Maps © OpenStreetMap contributors. Routing by OSRM.
+
+© 2026
+
+Remove:
+
+- Final-Year B.Tech Project
+- Academic demonstration system
+
+==================================================
+10. REMOVE DEMONSTRATION HEADER
+==================================================
+
+Remove any header notice containing:
+
+"Demonstration system. All shelters and contact numbers shown are
+fictional academic test data..."
+
+Do not replace it with another header notice.
+
+==================================================
+11. THEMES
+==================================================
+
+Both light and dark themes are mandatory.
+
+Match the supplied screenshots.
+
+Preserve the existing approved ESAP color system.
+
+Do not introduce blue as the dominant UI color.
+
+==================================================
+12. RESPONSIVENESS
+==================================================
+
+Maintain the approved split-card design on desktop.
+
+On tablet/mobile:
+
+- Stack the two panels
+- Maintain readable spacing
+- Prevent horizontal overflow
+- Preserve form usability
+- Keep navbar responsive
+- Keep footer responsive
+
+==================================================
+13. IMPORTANT
+==================================================
+
+DO NOT:
+
+- redesign the authentication pages creatively
+- replace the split-card design
+- change approved typography unnecessarily
+- remove working authentication functionality
+- rebuild the backend
+- introduce unnecessary dependencies
+- leave Google authentication as a dummy button
+
+DO:
+
+- modify the existing project
+- preserve existing routes
+- preserve existing backend architecture
+- implement real Google authentication
+- preserve email authentication
+- preserve number authentication
+- preserve administrator passkey verification
+- match the supplied screenshots closely
+- use the supplied ESAP symbol
+- update favicon
+- use the finalized footer
+- test every authentication method after implementation
+
+This Authentication UI is LOCKED.

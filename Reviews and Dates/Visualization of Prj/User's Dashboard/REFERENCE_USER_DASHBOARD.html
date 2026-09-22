@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESAP — User Portal</title>
+<style>
+:root{
+ --bg:#f5f4f0;--surface:#f5f4f0;--surface2:#edece5;--text:#14171b;--muted:#3e4a59;
+ --border:#cfcfc9;--primary:#a31e14;--primary2:#8f1810;--primarySoft:#f3deda;
+ --accent:#e2574a;--accent2:#e38a2c;--accentSoft:#f8e4df;
+ --teal:#287d67;--tealSoft:#e1eee9;--amber:#a45a0c;--amberSoft:#f6e8d6;
+ --red:#a31e14;--redSoft:#f3deda;--nav:#f5f4f0;--navText:#14171b;
+ --shadow:0 10px 28px rgba(20,20,18,.045);--radius:0px;
+}
+[data-theme=dark]{
+ --bg:#121316;--surface:#1a1c20;--surface2:#202226;--text:#f1efe9;--muted:#9aa0a8;
+ --border:#3d3d40;--primary:#e2574a;--primary2:#ee685b;--primarySoft:#392522;
+ --accent:#e2574a;--accent2:#e38a2c;--accentSoft:#392522;
+ --teal:#65b89d;--tealSoft:#1f342e;--amber:#e3a35d;--amberSoft:#3a2d20;
+ --red:#e2574a;--redSoft:#392522;--nav:#121316;--navText:#f1efe9;
+ --shadow:0 16px 35px rgba(0,0,0,.18);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.demo{height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.nav{position:sticky;top:0;z-index:30;background:var(--nav);color:var(--navText);border-bottom:1px solid var(--border)}
+.navin{max-width:1180px;height:70px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;margin-right:auto}
+.logo{width:29px;height:29px;border-radius:0;background:var(--accent);display:grid;place-items:center;color:#fff;font-size:14px}
+.navlinks{display:flex;gap:3px}
+.navlinks button{border:0;background:transparent;color:var(--navText);opacity:.78;padding:9px 12px;border-radius:9px}
+.navlinks button:hover,.navlinks button.active{background:rgba(20,23,27,.07);opacity:1}
+.userarea{display:flex;align-items:center;gap:10px;border-left:1px solid var(--border);padding-left:15px}
+[data-theme=dark] .nav{border-bottom-color:rgba(255,255,255,.08)}
+[data-theme=dark] .navlinks button:hover,[data-theme=dark] .navlinks button.active{background:rgba(255,255,255,.08)}
+[data-theme=dark] .userarea{border-left-color:rgba(255,255,255,.14)}
+[data-theme=dark] .theme{border-color:rgba(255,255,255,.18)}
+[data-theme=dark] .signout{border-color:rgba(255,255,255,.18)}
+.theme{width:36px;height:36px;border:1px solid var(--border);background:transparent;color:var(--navText);border-radius:9px}
+.username{white-space:nowrap}
+.signout{border:1px solid var(--border);background:var(--surface);color:var(--text);padding:9px 13px;border-radius:9px;font-weight:700}
+.container{max-width:1180px;margin:auto;padding:46px 24px 80px}
+.view{display:none}.view.active{display:block}
+.eyebrow{text-transform:uppercase;letter-spacing:.13em;color:var(--primary);font-size:11px;font-weight:800;margin-bottom:8px}
+h1{font-size:38px;line-height:1.08;letter-spacing:-.045em;margin:0 0 10px}
+h2{font-size:22px;line-height:1.2;letter-spacing:-.025em;margin:0 0 7px}
+h3{font-size:16px;line-height:1.25;margin:0 0 5px}
+.lead{color:var(--muted);max-width:680px;margin:0}
+.hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-end}
+.actions{display:flex;gap:9px;align-items:center}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);padding:10px 15px;border-radius:9px;font-weight:700}
+.btn:hover{border-color:var(--primary);transform:translateY(-1px)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.primary:hover{background:var(--primary2);border-color:var(--primary2)}
+.btn.secondary{background:var(--accent2);border-color:var(--accent2);color:#141414}.btn.secondary:hover{filter:brightness(.94)}
+.btn.danger{color:var(--red);border-color:#e4b6b6;background:var(--surface)}
+.divider{height:1px;background:var(--border);margin:28px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.dashboard-grid{display:grid;grid-template-columns:1.65fr .9fr;gap:16px}
+.welcome{padding:25px}
+.welcome .mini{display:inline-flex;margin-top:15px;padding:7px 10px;border-radius:999px;background:var(--tealSoft);color:var(--teal);font-weight:750;font-size:12px}
+.active-request{padding:23px;border-left:4px solid var(--primary)}
+.request-head{display:flex;justify-content:space-between;gap:18px}
+.request-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;border:1px solid transparent}
+.pill.primary{background:var(--primarySoft);color:var(--primary)}
+.pill.success{background:var(--tealSoft);color:var(--teal)}
+.pill.warning{background:var(--amberSoft);color:var(--amber)}
+.pill.danger{background:var(--redSoft);color:var(--red)}
+.score{text-align:right}.score strong{display:block;font-size:27px;line-height:1}.score span{font-size:11px;color:var(--muted)}
+.quick{
+  padding:20px;
+  background:var(--nav);
+  color:#fff;
+  border-color:var(--nav);
+}
+.quick:hover{
+  border-color:var(--primary);
+}
+.quick a{display:block;color:#fff;text-decoration:none}
+.quick h3{color:#fff}
+.quick p{color:rgba(255,255,255,.76);margin:0;font-size:13px}
+.quick .icon{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(255,255,255,.11);color:#fff;
+  display:grid;place-items:center;font-weight:900;margin-bottom:13px
+}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.stat{padding:19px}.statnum{font-size:28px;font-weight:800;letter-spacing:-.04em}.statlabel{font-size:12px;color:var(--muted)}
+.side{padding:21px}.statusrow{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}.statusrow:last-child{border:0}
+.table{overflow:hidden;margin-top:16px}.tablehead{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--border);font-size:12px}th{background:var(--surface2);color:var(--muted);font-weight:750}tr:last-child td{border-bottom:0}
+.formcard{max-width:900px;padding:26px}.formsection{padding-bottom:23px;margin-bottom:23px;border-bottom:1px solid var(--border)}.formsection:last-child{border:0;margin:0;padding:0}
+label{display:block;font-size:12px;font-weight:800;margin-bottom:7px}input,select,textarea{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;padding:11px 12px;outline:0}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primarySoft)}
+.formrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.formrow.two{grid-template-columns:repeat(2,1fr)}
+.field{margin-top:13px}.field:first-child{margin-top:0}
+.choice-note{color:var(--muted);font-size:12px;margin:0 0 12px}
+.map{height:245px;border:1px solid var(--border);border-radius:11px;position:relative;overflow:hidden;background:
+linear-gradient(25deg,transparent 47%,rgba(86,86,201,.22) 48%,rgba(86,86,201,.22) 49%,transparent 50%),
+linear-gradient(110deg,transparent 43%,rgba(23,130,111,.18) 44%,rgba(23,130,111,.18) 45%,transparent 46%),
+repeating-linear-gradient(0deg,transparent 0 39px,var(--border) 40px,transparent 41px),
+repeating-linear-gradient(90deg,transparent 0 55px,var(--border) 56px,transparent 57px),var(--surface2)}
+.map::before{content:"BENGALURU";position:absolute;left:48%;top:47%;font-weight:850;font-size:13px;color:var(--muted);opacity:.75}
+.pin{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--primary);border:3px solid var(--surface);box-shadow:0 3px 9px #0004}.pin.user{left:52%;top:47%}
+.mapfoot{display:flex;gap:14px;margin-top:8px;color:var(--muted);font-size:11px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;background:var(--primary)}.dot.green{background:var(--teal)}.dot.dark{background:#2f3033}
+.recommend{margin-top:16px}.recommendhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.rec-card{padding:20px;margin-bottom:12px;border-left:4px solid var(--teal)}
+.rec-top{display:flex;gap:14px;align-items:flex-start}.rank{width:34px;height:34px;border-radius:9px;background:var(--teal);color:white;display:grid;place-items:center;font-weight:900;flex:0 0 auto}.rec-name{font-size:17px;font-weight:800}.rec-address{color:var(--muted);font-size:12px}.scorebig{margin-left:auto;text-align:right}.scorebig strong{font-size:25px}.scorebig span{display:block;color:var(--muted);font-size:10px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:9px;overflow:hidden;margin:16px 0}.metric{padding:12px;border-right:1px solid var(--border)}.metric:last-child{border:0}.metric strong{display:block;font-size:17px}.metric small{color:var(--muted);font-size:10px}
+.progress{height:7px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:11px 0 14px}.progress i{display:block;height:100%;background:var(--teal);border-radius:99px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{border:1px solid var(--border);padding:5px 9px;border-radius:999px;font-size:11px}.tag.ok{background:var(--tealSoft);border-color:#b7ded1;color:var(--teal)}
+.rec-actions{display:flex;gap:8px;margin-top:15px;align-items:center}.linkbtn{border:0;background:transparent;color:var(--text);font-weight:750;padding:8px 5px}
+.shelter-tools{display:flex;gap:9px;flex-wrap:wrap;margin:22px 0}.shelter-tools input{max-width:360px}.shelter-tools select{max-width:180px}
+.segment{display:flex;border:1px solid var(--border);border-radius:9px;overflow:hidden}.segment button{border:0;background:var(--surface);color:var(--text);padding:9px 13px}.segment button.active{background:var(--primary);color:#fff}
+.sheltergrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.sheltercard{padding:19px;border-left:4px solid var(--teal)}.sheltercard.limited{border-left-color:var(--amber)}.sheltercard.full{border-left-color:var(--red)}
+.sheltertitle{font-weight:800;font-size:15px}.address{color:var(--muted);font-size:12px;margin:3px 0 13px}.sheltermetrics{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:9px;overflow:hidden}.sm{padding:11px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}.sm:nth-child(even){border-right:0}.sm:nth-last-child(-n+2){border-bottom:0}.sm strong{display:block;font-size:16px}.sm small{color:var(--muted);font-size:10px}
+.maplarge{height:510px;position:relative;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:
+linear-gradient(28deg,transparent 47%,rgba(86,86,201,.22) 48%,rgba(86,86,201,.22) 49%,transparent 50%),
+linear-gradient(112deg,transparent 44%,rgba(23,130,111,.20) 45%,rgba(23,130,111,.20) 46%,transparent 47%),
+repeating-linear-gradient(0deg,transparent 0 54px,var(--border) 55px,transparent 56px),
+repeating-linear-gradient(90deg,transparent 0 72px,var(--border) 73px,transparent 74px),var(--surface2)}
+.maplarge .city{position:absolute;left:44%;top:45%;font-size:18px;font-weight:850;color:var(--muted)}.maplegend{position:absolute;left:16px;bottom:15px;background:var(--surface);border:1px solid var(--border);padding:9px 12px;border-radius:9px;box-shadow:var(--shadow);font-size:11px}
+.mpin{position:absolute;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#2f3033;color:#fff;border:3px solid var(--surface);font-size:10px;font-weight:850;box-shadow:0 3px 12px #0004}.mpin.best{background:var(--teal)}.mpin.user{background:var(--primary)}
+.detailgrid{display:grid;grid-template-columns:1.4fr .75fr;gap:16px}.detailmain,.detailside{display:flex;flex-direction:column;gap:16px}.detailcard{padding:22px}.detailmap{height:215px;border-radius:11px;overflow:hidden;position:relative;background:linear-gradient(30deg,transparent 47%,rgba(86,86,201,.2) 48%,transparent 50%),repeating-linear-gradient(0deg,transparent 0 35px,var(--border) 36px,transparent 37px),var(--surface2)}
+.detailstat{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:9px;overflow:hidden}.detailstat div{padding:12px;border-right:1px solid var(--border)}.detailstat div:last-child{border:0}.detailstat strong{display:block;font-size:17px}.detailstat small{color:var(--muted);font-size:10px}
+.bars .barrow{display:grid;grid-template-columns:72px 1fr 35px;gap:10px;align-items:center;margin:10px 0;font-size:11px}.bar{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--primary)}
+.notice{padding:11px 13px;background:var(--amberSoft);color:var(--amber);border-radius:9px;font-size:11px}
+.footer{margin-top:34px;text-align:center;color:var(--muted);font-size:11px}
+@media(max-width:950px){.navlinks{display:none}.dashboard-grid,.detailgrid{grid-template-columns:1fr}.sheltergrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.container{padding:34px 16px 60px}.hero{flex-direction:column;align-items:flex-start}h1{font-size:32px}.username{display:none}.quickgrid,.statgrid,.sheltergrid{grid-template-columns:1fr}.formrow,.formrow.two,.metrics,.detailstat{grid-template-columns:1fr 1fr}.rec-top{flex-wrap:wrap}.scorebig{margin-left:auto}}
+</style>
+</head>
+<body>
+<div class="demo"></div>
+<header class="nav"><div class="navin">
+  <div class="brand"><div class="logo">✚</div><span>Shelter Allocation</span></div>
+  <nav class="navlinks">
+    <button class="active" data-view="dashboard">Dashboard</button>
+    <button data-view="find">Find shelter</button>
+    <button data-view="shelters">Shelters</button>
+    <button data-view="requests">My requests</button>
+  </nav>
+  <div class="userarea"><span class="username">Demo User</span><button class="theme" id="theme">☾</button><button class="signout">Sign out</button></div>
+</div></header>
+
+<main class="container">
+
+<section id="dashboard" class="view active">
+  <div class="hero">
+    <div><div class="eyebrow">User dashboard</div><h1>Good morning, Demo.</h1><p class="lead">Access emergency shelter allocation, review active requests, and browse shelters from one place.</p></div>
+    <div class="actions"><button class="btn primary" data-go="find">+ New emergency request</button></div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="dashboard-grid">
+    <div>
+      <div class="card welcome">
+        <div class="eyebrow">Current allocation</div>
+        <h2>Your latest request has a shelter assigned.</h2>
+        <p class="lead">Rajajinagar Sports Complex Shelter is currently the recommended allocation for your submitted emergency request.</p>
+        <span class="mini">● Shelter allocated · High priority</span>
+      </div>
+      <div class="card active-request" style="margin-top:14px">
+        <div class="request-head">
+          <div>
+            <div class="request-meta"><span class="pill warning">High priority</span><span class="pill success">Shelter allocated</span><span class="pill primary">Earthquake</span></div>
+            <h2>100 people · Request #2</h2>
+            <p class="lead">Rajajinagar Sports Complex Shelter · submitted Sep 19, 2026, 07:12 AM</p>
+          </div>
+          <div class="score"><strong>67</strong><span>allocation score</span></div>
+        </div>
+        <div class="rec-actions"><button class="btn primary" data-go="recommendations">View recommendations</button><button class="linkbtn" data-go="requests">View request history →</button></div>
+      </div>
+    </div>
+    <aside class="card side">
+      <div class="eyebrow">System snapshot</div><h2>At a glance</h2>
+      <div class="statusrow"><span>Registered shelters</span><strong>14</strong></div>
+      <div class="statusrow"><span>Currently available</span><strong style="color:var(--teal)">9</strong></div>
+      <div class="statusrow"><span>Spaces available</span><strong>2,993</strong></div>
+      <div class="statusrow"><span>Location status</span><span class="pill success">Set</span></div>
+      <div style="margin-top:14px"><button class="btn" style="width:100%" data-go="shelters">Browse shelters</button></div>
+    </aside>
+  </div>
+
+  <div class="quickgrid" style="margin-top:16px">
+    <button class="card quick" data-go="find"><div class="icon">⌖</div><h3>Find a shelter</h3><p>Submit a new emergency request and receive ranked recommendations.</p></button>
+    <button class="card quick" data-go="shelters"><div class="icon">▦</div><h3>Browse shelters</h3><p>Compare capacity, distance, status, facilities, and suitability.</p></button>
+    <button class="card quick" data-go="requests"><div class="icon">↺</div><h3>My requests</h3><p>Open previous requests and review their recommendations.</p></button>
+  </div>
+
+  <div class="statgrid">
+    <div class="card stat"><div class="statnum">14</div><div class="statlabel">Shelters in system</div></div>
+    <div class="card stat"><div class="statnum">9</div><div class="statlabel">Currently available</div></div>
+    <div class="card stat"><div class="statnum">2,993</div><div class="statlabel">Free spaces right now</div></div>
+  </div>
+
+  <div class="card table" style="margin-top:16px"><div class="tablehead"><h3>Recent requests</h3><button class="btn" data-go="requests">View all</button></div>
+    <table><thead><tr><th>Disaster</th><th>Priority</th><th>People</th><th>Recommended shelter</th><th>Status</th><th>Submitted</th></tr></thead>
+    <tbody><tr><td>Earthquake</td><td><span class="pill warning">High</span></td><td>100</td><td>Rajajinagar Sports Complex Shelter</td><td><span class="pill success">Allocated</span></td><td>5h ago</td></tr>
+    <tr><td>Flood</td><td><span class="pill primary">Medium</span></td><td>4</td><td>Yelahanka Government High School Camp</td><td><span class="pill success">Allocated</span></td><td>Sep 12</td></tr></tbody></table>
+  </div>
+</section>
+
+<section id="find" class="view">
+  <div class="eyebrow">Emergency request</div><h1>Find emergency shelter</h1><p class="lead">Tell us where you are, what happened, who is with you, and what support you need. The system filters unsuitable shelters before ranking.</p>
+  <div class="divider"></div>
+  <div class="card formcard">
+    <div class="formsection">
+      <h2>Where are you?</h2><p class="choice-note">Used to calculate distance. Your location is only used for this request.</p>
+      <div class="actions" style="margin-bottom:11px"><button class="btn primary">Use my current location</button><span class="pill success">Location set</span></div>
+      <div class="map"><div class="pin user"></div></div>
+      <div class="mapfoot"><span>● Pin set at Bengaluru</span><span>Click the map or adjust your location</span></div>
+      <div class="field"><label>Landmark or area name</label><input placeholder="e.g. Near Koramangala 4th Block bus stop"></div>
+    </div>
+
+    <div class="formsection">
+      <h2>What has happened?</h2><p class="choice-note">Select from the list. If your disaster is not listed, choose Other.</p>
+      <div class="field"><label>Disaster type</label><select id="disaster"><option value="">Select disaster type</option><option>Cyclone</option><option>Earthquake</option><option>Fire</option><option>Flood</option><option>Landslide</option><option>Other</option></select></div>
+      <div class="field" id="otherDisaster" style="display:none"><label>Name of disaster</label><input placeholder="Enter the disaster name"></div>
+      <div class="field"><label>How urgent is this?</label><select id="urgency"><option value="">Select urgency</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div class="field" id="urgencyHelp" style="display:none"><p class="choice-note" id="urgencyText"></p></div>
+    </div>
+
+    <div class="formsection">
+      <h2>Who is with you?</h2><p class="choice-note">These groups can overlap. Count each person in every category that applies.</p>
+      <div class="formrow">
+        <div><label>Total number of people *</label><input type="number" value="1" min="1"></div>
+        <div><label>Children</label><input type="number" value="0" min="0"></div>
+        <div><label>Senior citizens</label><input type="number" value="0" min="0"></div>
+      </div>
+      <div class="formrow two" style="margin-top:13px">
+        <div><label>Women</label><input type="number" value="0" min="0"></div>
+        <div><label>Disabled people</label><input type="number" value="0" min="0"></div>
+      </div>
+    </div>
+
+    <div class="formsection">
+      <h2>What do you need at the shelter?</h2><p class="choice-note">Select <strong>any number</strong> of facilities. Multiple options can be active at the same time.</p>
+      <div class="tags" id="needs">
+        <button class="tag" type="button">Drinking Water</button><button class="tag" type="button">Food</button><button class="tag" type="button">Medical Assistance</button><button class="tag" type="button">Toilets</button><button class="tag" type="button">Accessibility Support</button><button class="tag" type="button">Child-Friendly Facilities</button><button class="tag" type="button">Electricity</button><button class="tag" type="button">Pet Friendly</button><button class="tag" type="button">Security</button><button class="tag" type="button">Women-Friendly Facilities</button>
+      </div>
+      <div class="field"><label>Anything else the shelter should know</label><textarea rows="4" placeholder="Optional: injuries, mobility needs, transport limitations, or other relevant information"></textarea></div>
+    </div>
+    <div class="actions"><button class="btn primary" style="flex:1" data-go="recommendations">Find shelters now</button><button class="btn" data-go="dashboard">Cancel</button></div>
+  </div>
+</section>
+
+<section id="recommendations" class="view">
+  <div class="hero"><div><div class="eyebrow">Request #2 · Ranked results</div><h1>8 shelters can take your group</h1><p class="lead">100 people · Earthquake · High priority · submitted Sep 19, 2026, 07:12 AM</p></div><div class="actions"><button class="btn danger">Cancel request</button><button class="btn primary" data-go="find">New request</button></div></div>
+  <div class="divider"></div>
+  <div class="card detailcard">
+    <div class="detailstat"><div><strong>100</strong><small>Total people</small></div><div><strong>25</strong><small>Children</small></div><div><strong>23</strong><small>Senior citizens</small></div><div><strong>45</strong><small>Women</small></div></div>
+    <div style="margin-top:15px"><strong>Facilities requested</strong><div class="tags" style="margin-top:8px"><span class="tag">Drinking Water</span><span class="tag">Food</span><span class="tag">Medical Assistance</span><span class="tag">Toilets</span><span class="tag">Electricity</span><span class="tag">Women-Friendly Facilities</span></div></div>
+  </div>
+  <div class="card maplarge" style="margin-top:16px">
+    <span class="city">Bengaluru</span>
+    <span class="mpin user" style="left:48%;top:48%">●</span><span class="mpin best" style="left:39%;top:58%">1</span><span class="mpin" style="left:51%;top:54%">2</span><span class="mpin" style="left:56%;top:68%">3</span><span class="mpin" style="left:63%;top:50%">4</span><span class="mpin" style="left:43%;top:20%">5</span><span class="mpin" style="left:41%;top:70%">6</span><span class="mpin" style="left:61%;top:37%">7</span><span class="mpin" style="left:32%;top:72%">8</span>
+    <div class="maplegend"><span><i class="dot"></i>Your location</span> &nbsp; <span><i class="dot green"></i>Best match</span> &nbsp; <span><i class="dot dark"></i>Other suitable shelters</span></div>
+  </div>
+  <div class="recommend">
+    <div class="recommendhead"><h2>Ranked recommendations</h2><span class="muted">Best match first</span></div>
+    <div class="card rec-card"><div class="rec-top"><div class="rank">1</div><div><div class="rec-name">Rajajinagar Sports Complex Shelter</div><div class="rec-address">Dr. Rajkumar Road, Rajajinagar</div><div class="request-meta" style="margin-top:8px"><span class="pill success">Available</span><span class="pill success">Best match</span><span class="pill primary">Wheelchair accessible</span></div></div><div class="scorebig"><strong>67</strong><span>suitability / 100</span></div></div>
+      <div class="metrics"><div class="metric"><strong>20 km</strong><small>Straight-line distance</small></div><div class="metric"><strong>590</strong><small>Spaces available</small></div><div class="metric"><strong>210 / 800</strong><small>Current occupancy</small></div><div class="metric"><strong>85%</strong><small>Disaster suitability</small></div></div>
+      <div class="progress"><i style="width:26%"></i></div>
+      <div class="tags"><span class="tag ok">✓ Drinking Water</span><span class="tag ok">✓ Food</span><span class="tag ok">✓ Medical Assistance</span><span class="tag ok">✓ Toilets</span><span class="tag ok">✓ Electricity</span><span class="tag ok">✓ Women-Friendly</span><span class="tag">Child-Friendly</span><span class="tag">Accessibility</span><span class="tag">Security</span><span class="tag">Pet Friendly</span></div>
+      <div class="rec-actions"><button class="btn" data-go="detail">View details</button><button class="btn primary" onclick="alert('Route display will be connected to the live map during project integration.')">Get route</button><button class="linkbtn">Why this score?</button><button class="linkbtn">Call 99999-10106</button></div>
+    </div>
+    <div class="card rec-card"><div class="rec-top"><div class="rank" style="background:#2f3033">2</div><div><div class="rec-name">Jayanagar Civic Assembly Hall</div><div class="rec-address">9th Block, Jayanagar East</div><div class="request-meta" style="margin-top:8px"><span class="pill success">Available</span><span class="pill primary">Wheelchair accessible</span></div></div><div class="scorebig"><strong>65</strong><span>suitability / 100</span></div></div>
+      <div class="metrics"><div class="metric"><strong>28 km</strong><small>Straight-line distance</small></div><div class="metric"><strong>420</strong><small>Spaces available</small></div><div class="metric"><strong>180 / 600</strong><small>Current occupancy</small></div><div class="metric"><strong>85%</strong><small>Disaster suitability</small></div></div>
+      <div class="progress"><i style="width:30%"></i></div><div class="rec-actions"><button class="btn" data-go="detail">View details</button><button class="btn primary" onclick="alert('Route display will be connected to the live map during project integration.')">Get route</button></div>
+    </div>
+    <div class="card rec-card"><div class="rec-top"><div class="rank" style="background:#2f3033">3</div><div><div class="rec-name">KR Puram Railway Colony Shelter</div><div class="rec-address">Railway Colony, Krishnarajapuram</div><div class="request-meta" style="margin-top:8px"><span class="pill success">Available</span></div></div><div class="scorebig"><strong>61</strong><span>suitability / 100</span></div></div>
+      <div class="metrics"><div class="metric"><strong>22 km</strong><small>Straight-line distance</small></div><div class="metric"><strong>230</strong><small>Spaces available</small></div><div class="metric"><strong>70 / 300</strong><small>Current occupancy</small></div><div class="metric"><strong>82%</strong><small>Disaster suitability</small></div></div>
+      <div class="progress"><i style="width:23%"></i></div><div class="rec-actions"><button class="btn" data-go="detail">View details</button><button class="btn primary" onclick="alert('Route display will be connected to the live map during project integration.')">Get route</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="shelters" class="view">
+  <div class="hero"><div><div class="eyebrow">Shelter directory</div><h1>All shelters</h1><p class="lead">Compare registered shelters by availability, capacity, distance, and facilities.</p></div>
+  <div class="segment"><button id="listMode" class="active">List</button><button id="mapMode">Map</button></div></div>
+  <div class="divider"></div>
+  <div id="listPanel">
+    <div class="shelter-tools"><input placeholder="Search by name or address"><select><option>All statuses</option><option>Available</option><option>Limited capacity</option><option>Full</option></select><select><option>Nearest first</option><option>Most space</option><option>Lowest occupancy</option></select></div>
+    <div class="sheltergrid">
+      <div class="card sheltercard"><div class="sheltertitle">Yelahanka Government High School Camp</div><div class="address">Yelahanka New Town, Sector B</div><span class="pill success">Available</span><div class="sheltermetrics" style="margin-top:12px"><div class="sm"><strong>8.8 km</strong><small>Away</small></div><div class="sm"><strong>310</strong><small>Spaces free</small></div><div class="sm"><strong>11%</strong><small>Occupied</small></div><div class="sm"><strong>✓</strong><small>Suitable</small></div></div><div class="progress"><i style="width:11%"></i></div><button class="btn" data-go="detail">View details</button></div>
+      <div class="card sheltercard"><div class="sheltertitle">Rajajinagar Sports Complex Shelter</div><div class="address">Dr. Rajkumar Road, Rajajinagar</div><span class="pill success">Available</span><div class="sheltermetrics" style="margin-top:12px"><div class="sm"><strong>20 km</strong><small>Away</small></div><div class="sm"><strong>590</strong><small>Spaces free</small></div><div class="sm"><strong>26%</strong><small>Occupied</small></div><div class="sm"><strong>✓</strong><small>Suitable</small></div></div><div class="progress"><i style="width:26%"></i></div><button class="btn" data-go="detail">View details</button></div>
+      <div class="card sheltercard limited"><div class="sheltertitle">Indiranagar Municipal School Shelter</div><div class="address">100 Feet Road, HAL 2nd Stage</div><span class="pill warning">Limited capacity</span><div class="sheltermetrics" style="margin-top:12px"><div class="sm"><strong>24 km</strong><small>Away</small></div><div class="sm"><strong>35</strong><small>Spaces free</small></div><div class="sm"><strong>88%</strong><small>Occupied</small></div><div class="sm"><strong>✓</strong><small>Suitable</small></div></div><div class="progress"><i style="width:88%"></i></div><button class="btn" data-go="detail">View details</button></div>
+      <div class="card sheltercard"><div class="sheltertitle">KR Puram Railway Colony Shelter</div><div class="address">Railway Colony, Krishnarajapuram</div><span class="pill success">Available</span><div class="sheltermetrics" style="margin-top:12px"><div class="sm"><strong>22 km</strong><small>Away</small></div><div class="sm"><strong>230</strong><small>Spaces free</small></div><div class="sm"><strong>12%</strong><small>Occupied</small></div><div class="sm"><strong>✓</strong><small>Suitable</small></div></div><div class="progress"><i style="width:12%"></i></div><button class="btn" data-go="detail">View details</button></div>
+      <div class="card sheltercard limited"><div class="sheltertitle">Basavanagudi Heritage Hall</div><div class="address">Bull Temple Road, Basavanagudi</div><span class="pill warning">Limited capacity</span><div class="sheltermetrics" style="margin-top:12px"><div class="sm"><strong>26 km</strong><small>Away</small></div><div class="sm"><strong>30</strong><small>Spaces free</small></div><div class="sm"><strong>83%</strong><small>Occupied</small></div><div class="sm"><strong>✓</strong><small>Suitable</small></div></div><div class="progress"><i style="width:83%"></i></div><button class="btn" data-go="detail">View details</button></div>
+      <div class="card sheltercard full"><div class="sheltertitle">Whitefield Industrial Safety Shelter</div><div class="address">EPIP Zone, Whitefield</div><span class="pill danger">Full</span><div class="sheltermetrics" style="margin-top:12px"><div class="sm"><strong>30 km</strong><small>Away</small></div><div class="sm"><strong>0</strong><small>Spaces free</small></div><div class="sm"><strong>100%</strong><small>Occupied</small></div><div class="sm"><strong>—</strong><small>Unavailable</small></div></div><div class="progress"><i style="width:100%"></i></div><button class="btn" data-go="detail">View details</button></div>
+    </div>
+  </div>
+  <div id="mapPanel" style="display:none">
+    <div class="card maplarge">
+      <span class="city">Bengaluru</span>
+      <span class="mpin user" style="left:47%;top:50%">●</span>
+      <span class="mpin best" style="left:39%;top:58%">1</span><span class="mpin" style="left:52%;top:53%">2</span><span class="mpin" style="left:60%;top:67%">3</span><span class="mpin" style="left:63%;top:42%">4</span><span class="mpin" style="left:43%;top:22%">5</span><span class="mpin" style="left:35%;top:70%">6</span><span class="mpin" style="left:61%;top:31%">7</span><span class="mpin" style="left:28%;top:63%">8</span>
+      <div class="maplegend"><span><i class="dot"></i>Your location</span> &nbsp; <span><i class="dot green"></i>Available shelter</span> &nbsp; <span><i class="dot dark"></i>Other shelter</span></div>
+    </div>
+    <div class="card" style="padding:18px;margin-top:12px"><strong>8 shelters shown on map</strong><span class="muted"> · Click a numbered marker to inspect that shelter.</span></div>
+  </div>
+</section>
+
+<section id="detail" class="view">
+  <div class="hero"><div><div class="request-meta"><span class="pill success">Available</span><span class="pill primary">Wheelchair accessible</span></div><h1>Rajajinagar Sports Complex Shelter</h1><p class="lead">Dr. Rajkumar Road, Rajajinagar — 560010</p></div><div class="actions"><button class="btn primary">Get directions</button><button class="btn">Call shelter</button></div></div>
+  <div class="divider"></div>
+  <div class="detailgrid">
+    <div class="detailmain">
+      <div class="card detailcard"><h3>Capacity right now</h3><div class="detailstat" style="margin-top:11px"><div><strong>800</strong><small>Total capacity</small></div><div><strong>210</strong><small>Currently sheltering</small></div><div><strong style="color:var(--teal)">590</strong><small>Spaces available</small></div><div><strong>20 km</strong><small>Straight-line distance</small></div></div><div class="progress" style="margin-top:13px"><i style="width:26%"></i></div><span class="muted" style="font-size:11px">26% occupied. Available capacity is calculated from current occupancy.</span></div>
+      <div class="card detailcard"><h3>About this shelter</h3><p class="muted">Demo record. Indoor stadium with large open floor area and permanent sanitation blocks.</p></div>
+      <div class="card detailcard"><h3>Facilities</h3><div class="tags" style="margin-top:11px"><span class="tag ok">✓ Accessibility Support</span><span class="tag ok">✓ Child-Friendly Facilities</span><span class="tag ok">✓ Electricity</span><span class="tag ok">✓ Food</span><span class="tag ok">✓ Medical Assistance</span><span class="tag ok">✓ Pet Friendly</span><span class="tag ok">✓ Security</span><span class="tag ok">✓ Toilets</span><span class="tag ok">✓ Drinking Water</span><span class="tag ok">✓ Women-Friendly Facilities</span></div></div>
+      <div class="card detailcard"><h3>Disaster suitability</h3><div class="bars"><div class="barrow"><span>Cyclone</span><div class="bar"><i style="width:95%"></i></div><span>95%</span></div><div class="barrow"><span>Earthquake</span><div class="bar"><i style="width:85%"></i></div><span>85%</span></div><div class="barrow"><span>Fire</span><div class="bar"><i style="width:90%"></i></div><span>90%</span></div><div class="barrow"><span>Flood</span><div class="bar"><i style="width:95%"></i></div><span>95%</span></div><div class="barrow"><span>Landslide</span><div class="bar"><i style="width:80%"></i></div><span>80%</span></div><div class="barrow"><span>Other</span><div class="bar"><i style="width:95%"></i></div><span>95%</span></div></div><div class="notice">Shelters rated below 30% for a hazard are excluded from recommendations for that disaster type.</div></div>
+    </div>
+    <aside class="detailside">
+      <div class="card detailcard"><div class="detailmap"><span class="mpin user" style="left:46%;top:37%">●</span><span class="mpin best" style="left:57%;top:61%">●</span></div><button class="btn" style="width:100%;margin-top:11px">Open in OpenStreetMap</button></div>
+      <div class="card detailcard"><h3>Contact</h3><p class="muted" style="font-size:11px">Coordinator</p><strong>Complex Supervisor (Demo)</strong><p class="muted" style="font-size:11px;margin-top:10px">Phone</p><a href="#" style="color:var(--accent)">99999-10006</a><p class="muted" style="font-size:11px;margin-top:10px">Emergency line</p><a href="#" style="color:var(--accent)">99999-10106</a></div>
+      <div class="card detailcard"><h3>Accessibility</h3><p class="muted">This shelter is recorded as wheelchair accessible.</p><p class="muted">Fully accessible, lift to gallery level, accessible washrooms.</p></div>
+    </aside>
+  </div>
+</section>
+
+<section id="requests" class="view">
+  <div class="hero"><div><div class="eyebrow">History</div><h1>Your requests</h1><p class="lead">Review every emergency request you have submitted and its allocation status.</p></div><div class="actions"><select style="width:150px"><option>All statuses</option><option>Allocated</option><option>Closed</option></select><button class="btn primary" data-go="find">New request</button></div></div>
+  <div class="divider"></div>
+  <div class="card table"><table><thead><tr><th>Disaster</th><th>Priority</th><th>People</th><th>Recommended shelter</th><th>Status</th><th>Submitted</th><th></th></tr></thead><tbody>
+    <tr><td>Earthquake</td><td><span class="pill warning">High</span></td><td>100</td><td>Rajajinagar Sports Complex Shelter</td><td><span class="pill success">Allocated</span></td><td>Sep 19, 2026</td><td><button class="btn" data-go="recommendations">Open</button></td></tr>
+    <tr><td>Flood</td><td><span class="pill primary">Medium</span></td><td>4</td><td>Yelahanka Government High School Camp</td><td><span class="pill success">Allocated</span></td><td>Sep 12, 2026</td><td><button class="btn" data-go="recommendations">Open</button></td></tr>
+    <tr><td>Fire</td><td><span class="pill danger">Critical</span></td><td>8</td><td>KR Puram Railway Colony Shelter</td><td><span class="pill danger">Closed</span></td><td>Aug 30, 2026</td><td><button class="btn" data-go="recommendations">Open</button></td></tr>
+  </tbody></table></div>
+</section>
+
+<div class="footer">Demonstration system · Fictional academic test data · In a real emergency in India, call 112.</div>
+</main>
+
+<script>
+const root=document.documentElement, theme=document.getElementById('theme');
+function setTheme(t){root.dataset.theme=t;theme.textContent=t==='dark'?'☀':'☾';localStorage.setItem('esap-theme',t)}
+setTheme(localStorage.getItem('esap-theme')||'light');
+theme.onclick=()=>setTheme(root.dataset.theme==='dark'?'light':'dark');
+
+function show(id){
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+ document.querySelectorAll('.navlinks button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+
+const disaster=document.getElementById('disaster'), other=document.getElementById('otherDisaster');
+disaster.onchange=()=>other.style.display=disaster.value==='Other'?'block':'none';
+const urgency=document.getElementById('urgency'), help=document.getElementById('urgencyHelp'), urgencyText=document.getElementById('urgencyText');
+urgency.onchange=()=>{
+ const map={Critical:'Immediate shelter need.',High:'Urgent, shelter needed within hours.',Medium:'Shelter needed soon.',Low:'Non-immediate shelter requirement.'};
+ help.style.display=urgency.value?'block':'none'; urgencyText.textContent=map[urgency.value]||'';
+};
+document.querySelectorAll('#needs .tag').forEach(b=>b.onclick=()=>b.classList.toggle('ok'));
+
+const listMode=document.getElementById('listMode'), mapMode=document.getElementById('mapMode'), listPanel=document.getElementById('listPanel'), mapPanel=document.getElementById('mapPanel');
+listMode.onclick=()=>{listPanel.style.display='block';mapPanel.style.display='none';listMode.classList.add('active');mapMode.classList.remove('active')};
+mapMode.onclick=()=>{listPanel.style.display='none';mapPanel.style.display='block';mapMode.classList.add('active');listMode.classList.remove('active')};
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shelter Allocation — Auth Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#F1EFE9;--soft:#C9C6BE;--paper:#121316;--raised:#1A1C20;--amber:#E38A2C;--amber2:#F0994A;--red:#E2574A;--red2:#EE6C60;--green:#5FAE78;--slate:#9AA3AE;--line:rgba(241,239,233,.16);--strong:rgba(241,239,233,.30);--on:#14171B;color-scheme:dark}
+:root[data-theme=light]{--ink:#14171B;--soft:#3E434B;--paper:#F5F4F0;--raised:#EDEBE4;--amber:#B4590C;--amber2:#963F00;--red:#A31E14;--red2:#84150D;--green:#2C6B41;--slate:#5B6470;--line:rgba(20,23,27,.14);--strong:rgba(20,23,27,.30);--on:#FAF7F2;color-scheme:light}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:'Public Sans',sans-serif;line-height:1.5}button,input{font:inherit}.wrap{max-width:1180px;margin:auto;padding:0 28px}.mono{font-family:'IBM Plex Mono',monospace}
+header{border-bottom:1px solid var(--line)}nav{height:76px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center;font-weight:700;font-size:17px}.mark{width:26px;height:26px;background:var(--red);display:grid;place-items:center;color:#fff}.nav{display:flex;align-items:center;gap:18px}.theme{border:1px solid var(--strong);background:transparent;color:var(--slate);padding:7px 11px;font:12px 'IBM Plex Mono'}.home{font-size:14px;font-weight:500;text-decoration:none}
+.auth{min-height:calc(100vh - 130px);display:grid;place-items:center;padding:52px 20px}.box{width:min(920px,100%);display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--strong);background:var(--raised)}.intro{padding:46px 42px;min-height:610px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between}.kicker{font-size:13.5px;color:var(--slate);display:flex;gap:10px;align-items:center;margin-bottom:24px}.dot{width:7px;height:7px;background:var(--red)}.intro h1{font-size:clamp(34px,4vw,48px);line-height:1.08;letter-spacing:-.02em;margin:0 0 20px;max-width:12ch}.intro p{font-size:15.5px;color:var(--soft);max-width:40ch}.note{border-top:1px solid var(--line);padding-top:20px;color:var(--slate);font-size:12.5px}.form{padding:42px 40px;background:var(--paper)}.head{margin-bottom:25px}.eyebrow{font-size:12.5px;color:var(--slate)}h2{font-size:28px;margin:2px 0 7px;letter-spacing:-.015em}.head p{font-size:13.5px;color:var(--slate);margin:0}
+.provider{width:100%;height:46px;border:1px solid var(--strong);background:transparent;color:var(--ink);font-size:14px;font-weight:600}.provider:hover{background:var(--raised)}.g{font-weight:800;font-size:17px;margin-right:8px}.divider{display:flex;align-items:center;gap:12px;color:var(--slate);font-size:11px;margin:21px 0}.divider:before,.divider:after{content:"";height:1px;background:var(--line);flex:1}.tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--strong);margin-bottom:18px}.tab{border:0;background:transparent;color:var(--slate);padding:9px;font-size:12.5px;font-weight:600}.tab.active{background:var(--raised);color:var(--ink)}.field{margin-bottom:15px}.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:7px}.field input{width:100%;height:44px;border:1px solid var(--strong);background:var(--paper);color:var(--ink);padding:0 12px;outline:0}.field input:focus{border-color:var(--ink)}.field input::placeholder{color:var(--slate)}.phone{display:grid;grid-template-columns:82px 1fr;gap:8px}.country{border:1px solid var(--strong);display:grid;place-items:center;color:var(--slate);font:12px 'IBM Plex Mono'}.pw{position:relative}.pw input{padding-right:58px}.show{position:absolute;right:7px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--slate);font-size:11px}
+.admin{display:flex;gap:10px;border-top:1px solid var(--line);padding-top:15px;margin-top:3px;margin-bottom:15px}.admin input{margin-top:4px;accent-color:var(--red)}.admin strong{font-size:13px;display:block}.admin span{font-size:11.5px;color:var(--slate)}.passkey{display:none}.passkey.show{display:block}.hint{font-size:10.5px;color:var(--slate);margin-top:4px}.rules{border:1px solid var(--line);background:var(--raised);padding:10px 12px;margin:-3px 0 15px}.rt{font-size:11.5px;font-weight:600;margin-bottom:6px}.rule{font-size:11px;color:var(--slate);margin:3px 0}.rule.ok{color:var(--green)}.rule:before{content:'○';display:inline-block;width:16px}.rule.ok:before{content:'✓'}.submit{width:100%;height:46px;border:0;background:var(--red);color:var(--on);font-weight:700;font-size:14px}.switch{text-align:center;margin-top:18px;color:var(--slate);font-size:12.5px}.switch button{border:0;background:none;color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:3px}.hidden{display:none!important}footer{border-top:1px solid var(--line);padding:18px 0;color:var(--slate);font-size:12px}.foot{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:800px){.box{grid-template-columns:1fr}.intro{min-height:auto;border-right:0;border-bottom:1px solid var(--line);padding:32px}.note{margin-top:30px}.form{padding:32px}}@media(max-width:500px){.wrap{padding:0 18px}.auth{padding:28px 12px}.intro,.form{padding:25px 22px}.nav{gap:9px}.intro h1{font-size:34px}}
+
+/* Admin passkey modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(8,10,12,.68);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:grid;place-items:center;z-index:1000;padding:20px}
+.modal-overlay.hidden{display:none!important}
+body.modal-open{overflow:hidden}
+.modal{width:min(430px,100%);background:var(--paper);border:1px solid var(--line-strong);box-shadow:0 24px 70px rgba(0,0,0,.35);padding:30px}
+.modal-kicker{font-size:12px;color:var(--slate);margin-bottom:8px}
+.modal h3{font-size:24px;line-height:1.15;margin:0 0 8px}
+.modal p{font-size:13px;color:var(--slate);margin:0 0 22px}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modal-cancel{height:44px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-weight:600}
+.modal-confirm{height:44px;border:0;background:var(--red);color:var(--on-accent);font-weight:700}
+.modal-cancel:hover{background:var(--raised)}
+.modal-confirm:hover{background:var(--red-strong)}
+</style></head><body>
+<header><div class="wrap"><nav><div class="brand"><span class="mark">+</span>Shelter Allocation</div><div class="nav"><button class="theme" id="theme">☀︎ Light</button><a class="home" href="#">Back to home</a></div></nav></div></header>
+<main class="auth"><div class="box">
+<section class="intro"><div><div class="kicker"><span class="dot"></span>Secure access to the allocation platform</div><h1 id="introTitle">Secure access to shelter allocation.</h1><p id="introText">Sign in to submit an emergency request, view ranked shelters, and access your saved requests.</p></div><div class="note"><span class="mono">ACCESS</span><br>User and administrator accounts are handled separately. Administrator access requires an additional passkey.</div></section>
+<section class="form">
+<div id="login"><div class="head"><div class="eyebrow">Account access</div><h2>Log in</h2><p>Choose how you want to continue.</p></div><button class="provider"><span class="g">G</span>Continue with Google</button><div class="divider">OR</div><div class="tabs"><button class="tab active" data-group="login" data-method="email">Continue with email</button><button class="tab" data-group="login" data-method="phone">Continue with number</button></div><div id="login-email"><div class="field"><label>Email address</label><input type="email" placeholder="you@example.com"></div></div><div id="login-phone" class="hidden"><div class="field"><label>Mobile number</label><div class="phone"><div class="country">+91</div><input type="tel" placeholder="10-digit mobile number"></div></div></div><div class="field"><label>Password</label><div class="pw"><input id="lp" type="password" placeholder="Enter your password"><button class="show" data-target="lp">Show</button></div></div><div class="admin"><input id="la" type="checkbox"><label><strong>Log in as administrator</strong><span>Requires an administrator passkey in a verification pop-up after clicking Log in.</span></label></div><button class="submit" id="loginSubmit" type="button">Log in</button><div class="switch">Don't have an account? <button id="signupBtn">Create account</button></div></div>
+<div id="signup" class="hidden"><div class="head"><div class="eyebrow">New account</div><h2>Create account</h2><p>Set up your access to the shelter allocation platform.</p></div><button class="provider"><span class="g">G</span>Continue with Google</button><div class="divider">OR</div><div class="tabs"><button class="tab active" data-group="signup" data-method="email">Continue with email</button><button class="tab" data-group="signup" data-method="phone">Continue with number</button></div><div id="signup-email"><div class="field"><label>Email address</label><input type="email" placeholder="you@example.com"></div></div><div id="signup-phone" class="hidden"><div class="field"><label>Mobile number</label><div class="phone"><div class="country">+91</div><input type="tel" placeholder="10-digit mobile number"></div></div></div><div class="field"><label>Password</label><div class="pw"><input id="sp" type="password" placeholder="Create a strong password"><button class="show" data-target="sp">Show</button></div></div><div class="rules"><div class="rt">Password requirements</div><div class="rule" id="r1">At least 8 characters</div><div class="rule" id="r2">At least 1 uppercase letter</div><div class="rule" id="r3">At least 1 number</div><div class="rule" id="r4">At least 1 special character</div></div><div class="admin"><input id="sa" type="checkbox"><label><strong>Create account as administrator</strong><span>Requires an administrator passkey in a verification pop-up after clicking Create account.</span></label></div><button class="submit" id="signupSubmit" type="button">Create account</button><div class="switch">Already have an account? <button id="loginBtn">Log in</button></div></div>
+</section></div></main>
+
+<!-- ADMIN PASSKEY MODAL -->
+<div id="adminModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+  <div class="modal">
+    <div class="modal-kicker" id="modalKicker">Administrator verification</div>
+    <h3 id="adminModalTitle">Enter admin passkey</h3>
+    <p id="modalText">Administrator access requires an additional passkey before you can continue.</p>
+    <div class="field">
+      <label>Administrator passkey</label>
+      <div class="password-wrap">
+        <input id="modalPasskey" type="password" placeholder="Enter admin passkey" autocomplete="off">
+        <button class="show-pass" type="button" id="modalShowPass">Show</button>
+      </div>
+      <div id="modalError" class="error hidden">Please enter the administrator passkey.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" type="button" id="modalCancel">Cancel</button>
+      <button class="modal-confirm" type="button" id="modalContinue">Continue</button>
+    </div>
+  </div>
+</div>
+
+<footer><div class="wrap foot"><span>Emergency Shelter Allocation Platform</span><span>·</span><span>Academic demonstration system</span><span>·</span><span>© 2026</span></div></footer>
+<script>
+const root=document.documentElement,t=document.getElementById('theme');
+function theme(x){root.dataset.theme=x;t.textContent=x==='light'?'☾ Dark':'☀︎ Light'}
+let saved=null;try{saved=localStorage.getItem('shelter-theme')}catch(e){}
+theme(saved==='light'?'light':'dark');
+t.onclick=()=>{let n=root.dataset.theme==='light'?'dark':'light';theme(n);try{localStorage.setItem('shelter-theme',n)}catch(e){}};
+
+const login=document.getElementById('login');
+const signup=document.getElementById('signup');
+const it=document.getElementById('introTitle');
+const ix=document.getElementById('introText');
+
+function mode(m){
+  const isLogin=m==='login';
+  login.classList.toggle('hidden',!isLogin);
+  signup.classList.toggle('hidden',isLogin);
+  it.textContent=isLogin?'Secure access to shelter allocation.':'Create your access.';
+  ix.textContent=isLogin
+    ?'Sign in to submit an emergency request, view ranked shelters, and access your saved requests.'
+    :'Create an account to submit emergency requests, receive ranked shelter recommendations, and track your requests.';
+}
+document.getElementById('signupBtn').onclick=()=>mode('signup');
+document.getElementById('loginBtn').onclick=()=>mode('login');
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  const g=b.dataset.group,m=b.dataset.method;
+  document.querySelectorAll('.tab[data-group="'+g+'"]').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById(g+'-email').classList.toggle('hidden',m!=='email');
+  document.getElementById(g+'-phone').classList.toggle('hidden',m!=='phone');
+});
+
+// Admin passkey is requested only after the relevant submit button is clicked.
+
+// Login admin checkbox opens a modal only after Log in is clicked.
+const adminModal=document.getElementById('adminModal');
+const loginAdmin=document.getElementById('la');
+const loginSubmit=document.getElementById('loginSubmit');
+const modalPasskey=document.getElementById('modalPasskey');
+const modalError=document.getElementById('modalError');
+
+function openAdminModal(action){
+  modalPasskey.value='';
+  modalError.classList.add('hidden');
+  document.getElementById('adminModalTitle').textContent =
+    action==='signup' ? 'Verify administrator account' : 'Enter admin passkey';
+  document.getElementById('modalText').textContent =
+    action==='signup'
+      ? 'Enter the administrator passkey to continue creating this account.'
+      : 'Administrator access requires an additional passkey before you can continue.';
+  document.getElementById('modalContinue').textContent =
+    action==='signup' ? 'Create account' : 'Continue';
+  adminModal.dataset.action=action;
+  adminModal.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  setTimeout(()=>modalPasskey.focus(),80);
+}
+function closeAdminModal(){
+  adminModal.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+}
+
+loginSubmit.onclick=()=>{
+  if(loginAdmin.checked){
+    openAdminModal('login');
+  }else{
+    alert('User login will connect to the backend authentication flow.');
+  }
+};
+
+// Create-account admin verification uses the same blurred passkey modal, only after Create account is clicked.
+const signupAdmin=document.getElementById('sa');
+const signupSubmit=document.getElementById('signupSubmit');
+
+signupSubmit.onclick=()=>{
+  if(signupAdmin.checked){
+    openAdminModal('signup');
+  }else{
+    alert('Account creation will connect to the backend registration flow.');
+  }
+};
+
+document.getElementById('modalContinue').onclick=()=>{
+  if(!modalPasskey.value.trim()){
+    modalError.textContent='Please enter the administrator passkey.';
+    modalError.classList.remove('hidden');
+    modalPasskey.focus();
+    return;
+  }
+  const action=adminModal.dataset.action || 'login';
+  closeAdminModal();
+  alert(action==='signup'
+    ? 'Administrator account creation will continue after backend verification.'
+    : 'Admin login will continue to the administrator dashboard after backend verification.');
+};
+document.getElementById('modalCancel').onclick=closeAdminModal;
+document.getElementById('modalShowPass').onclick=()=>{
+  const showing=modalPasskey.type==='text';
+  modalPasskey.type=showing?'password':'text';
+  document.getElementById('modalShowPass').textContent=showing?'Show':'Hide';
+};
+modalPasskey.onkeydown=e=>{
+  if(e.key==='Enter'){e.preventDefault();document.getElementById('modalContinue').click()}
+  if(e.key==='Escape')closeAdminModal();
+};
+adminModal.onclick=e=>{if(e.target===adminModal)closeAdminModal()};
+
+// Existing password show/hide controls.
+document.querySelectorAll('.show[data-target]').forEach(b=>b.onclick=()=>{
+  const i=document.getElementById(b.dataset.target);
+  i.type=i.type==='password'?'text':'password';
+  b.textContent=i.type==='password'?'Show':'Hide';
+});
+
+// Live password requirements during account creation.
+const p=document.getElementById('sp');
+const rules=[
+  ['r1',v=>v.length>=8],
+  ['r2',v=>/[A-Z]/.test(v)],
+  ['r3',v=>/[0-9]/.test(v)],
+  ['r4',v=>/[^A-Za-z0-9]/.test(v)]
+];
+p.oninput=()=>rules.forEach(([id,f])=>document.getElementById(id).classList.toggle('ok',f(p.value)));
+</script></body></html>
